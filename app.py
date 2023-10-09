@@ -20,13 +20,13 @@ def comment(id):
     try:
         # Get user info from User Service
         if comment_info:
-            response = requests.get(f'http://localhost:5000/user/{comment_info["user_id"]}')
+            response = requests.get(f'http://localhost:5001/user/{comment_info["user_id"]}')
             print(comment_info)
             print(response)
             if response.status_code == 200:
                 comment_info['user'] = response.json()
 
-            response = requests.get(f'http://localhost:5001/post/{comment_info["post_id"]}')
+            response = requests.get(f'http://localhost:5002/post/{comment_info["post_id"]}')
             
             if response.status_code == 200:
                 comment_info['post'] = response.json()
@@ -50,6 +50,34 @@ def create_comment():
         return jsonify({"success":True})
     else:
         return jsonify({"success":False, "msg": "Please pass all the data"})
+    
+@app.route('/comment/<id>', methods=['PUT'])
+def update_comment(id):
+    # Check if the comment ID exists
+    if id in comments:
+        updated_comment = request.get_json()
+
+        # Check if the required keys are present in the request data
+        required_keys = ['user_id', 'post_id', 'comment']
+        if all(key in updated_comment for key in required_keys):
+            comments[id] = updated_comment
+            print(comments)
+            return jsonify({"success": True, "msg": "Comment updated successfully"})
+        else:
+            return jsonify({"success": False, "msg": "Please pass all the required data for update"}), 400
+    else:
+        return jsonify({"success": False, "msg": "Comment not found"}), 404
+    
+@app.route('/comment/<id>', methods=['DELETE'])
+def delete_comment(id):
+    if id in comments:
+        # If the comment with the given ID exists, delete it
+        del comments[id]
+        return jsonify({"success": True, "msg": "Comment deleted successfully"})
+    else:
+        return jsonify({"success": False, "msg": "Comment not found"}), 404
+
+
 
 if __name__ == '__main__':
     app.run()
