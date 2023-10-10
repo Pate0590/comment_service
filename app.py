@@ -18,7 +18,7 @@ def comment(id):
     comment_info = comments.get(id, {})
     print(comment_info)
     try:
-        # Get user info from User Service
+       
         if comment_info:
             response = requests.get(f'http://localhost:5001/user/{comment_info["user_id"]}')
             print(comment_info)
@@ -31,19 +31,15 @@ def comment(id):
             if response.status_code == 200:
                 comment_info['post'] = response.json()
     except Exception as e:
-        # Handle the exception, you can log the error or return an error response
-        return jsonify({'error': str(e)}), 500  # Return an error response with status code 500 for example
+        
+        return jsonify({'error': str(e)}), 500  
 
     return jsonify(comment_info)
 
 @app.route('/comment', methods=['POST'])
 def create_comment():
     new_comment = request.get_json()
-    
-    # Define a list of required keys
     required_keys = ['user_id', 'post_id', 'comment']
-
-    # Check if all required keys exist in the request data
     if all(key in new_comment for key in required_keys):
         comments[str(len(comments.keys()) + 1)] = new_comment
         print(comments)
@@ -53,11 +49,9 @@ def create_comment():
     
 @app.route('/comment/<id>', methods=['PUT'])
 def update_comment(id):
-    # Check if the comment ID exists
+    
     if id in comments:
         updated_comment = request.get_json()
-
-        # Check if the required keys are present in the request data
         required_keys = ['user_id', 'post_id', 'comment']
         if all(key in updated_comment for key in required_keys):
             comments[id] = updated_comment
@@ -71,7 +65,6 @@ def update_comment(id):
 @app.route('/comment/<id>', methods=['DELETE'])
 def delete_comment(id):
     if id in comments:
-        # If the comment with the given ID exists, delete it
         del comments[id]
         return jsonify({"success": True, "msg": "Comment deleted successfully"})
     else:
