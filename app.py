@@ -20,13 +20,13 @@ def comment(id):
     try:
        
         if comment_info:
-            response = requests.get(f'http://localhost:5001/user/{comment_info["user_id"]}')
+            response = requests.get(f'https://ankituserservice.azurewebsites.net/user/{comment_info["user_id"]}')
             print(comment_info)
             print(response)
             if response.status_code == 200:
                 comment_info['user'] = response.json()
 
-            response = requests.get(f'http://localhost:5002/post/{comment_info["post_id"]}')
+            response = requests.get(f'https://ankitpostservice.azurewebsites.net/post/{comment_info["post_id"]}')
             
             if response.status_code == 200:
                 comment_info['post'] = response.json()
@@ -73,4 +73,4 @@ def delete_comment(id):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run('0.0.0.0',port=5003)
